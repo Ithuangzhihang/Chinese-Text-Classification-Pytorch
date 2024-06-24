@@ -17,18 +17,28 @@ if __name__ == '__main__':
     dataset = 'THUCNews'  # 数据集
 
     # 搜狗新闻:embedding_SougouNews.npz, 腾讯:embedding_Tencent.npz, 随机初始化:random
+    # TODO: 嵌入文件选择，可以替换成金融的相关的模型
     embedding = 'embedding_SougouNews.npz'
+    
     if args.embedding == 'random':
         embedding = 'random'
+    
     model_name = args.model  # 'TextRCNN'  # TextCNN, TextRNN, FastText, TextRCNN, TextRNN_Att, DPCNN, Transformer
     if model_name == 'FastText':
-        from utils_fasttext import build_dataset, build_iterator, get_time_dif
-        embedding = 'random'
+        from utils_fasttext import build_dataset, build_iterator, get_time_dif # FastText模型使用不同的utils文件
+        embedding = 'random' # FastText模型使用随机嵌入
     else:
         from utils import build_dataset, build_iterator, get_time_dif
-
+        
+        
+    ## 动态导入模型模块
     x = import_module('models.' + model_name)
+    # 加载数据集，与词嵌入方式
     config = x.Config(dataset, embedding)
+    
+    
+    
+    # 设置随机数种子，保证结果可复现
     np.random.seed(1)
     torch.manual_seed(1)
     torch.cuda.manual_seed_all(1)
